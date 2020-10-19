@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block container %}
+    <div class="row mt-5">
+        <div class="col-10 col-md-6 offset-1 offset-md-3 mb-3">
+            <form action="/booking_done/" class="card mb-3" method="post">
+                <div class="card-body text-center pt-5">
+                    <img src="{{ teacher.picture }}" class="mb-3" width="95" alt="">
+                    <h2 class="h5 card-title mt-2 mb-2">{{ teacher.name }}</h2>
+                    <p class="my-1">Запись на пробный урок</p>
+                    <p class="my-1">{{ week[day_of_the_week] }}, {{ time }}:00</p>
+                </div>
+                <hr/>
+                <div class="card-body mx-3">
+                    <div class="row">
+                        {{ form.clientWeekday(value = day_of_the_week, class_="form-control") }}
+                        {{ form.clientTime(value = time, class_="form-control") }}
+                        {{ form.clientTeacher(value = teacher.id, class_="form-control") }}
+                    </div>
+
+                    {{ form.clientName.label(class_="mb-1 mt-2",for="clientName") }}
+                    {{ form.clientName(class_="form-control", id="clientName") }}
+                    {{ form.clientPhone.label(class_="mb-1 mt-2",for="clientName") }}
+                    {{ form.clientPhone(class_="form-control", id="clientPhone") }}
+                    {{ form.submit(class_="btn btn-primary btn-block mt-4") }}
+                    {{ form.csrf_token }}
+
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
