@@ -9,7 +9,7 @@
                     <section class="teacher=info">
 
                         <h1 class="h2">{{ teacher.name }}</h1>
-                        <p>{% for g in goals %}<span class="badge badge-secondary mr-2">{{ g }} </span>{% endfor %}
+                        <p>{% for g in goals %}<span class="badge badge-secondary mr-2">{{ g.rus }} </span>{% endfor %}
                             Рейтинг: {{ teacher.rating }} Ставка: {{ teacher.price }} / час</p>
                         <p>{{ teacher.about }}</p>
 
@@ -19,19 +19,20 @@
                         <h4 class="mb-4 mt-5">Записаться на пробный урок</h4>
                         {% for day_of_the_week_key,day_of_the_week_value in week.items() %}
                             <h6 class="mt-4">{{ day_of_the_week_value }}</h6>
-                            {% for k,v in teacher.free[day_of_the_week_key].items() %}
-                                {% if v == True %}
-                                    {% set time = k.split(':')[0] %}
-                                    <a href="/booking/{{ teacher.id }}/{{ day_of_the_week_key }}/{{ time }}/"
-                                       class="btn btn-outline-success mr-2">{{ k }} свободно</a>
+                            {% set empty = True %}
+                            {% for ft in (teacher.free_times|sort(attribute='time')) %}
+                                {% if ft.weekday == day_of_the_week_key %}
+                                    {% set time = ft.time %}
+                                    {% set empty = False %}
+                                    <a href="/booking/{{ teacher.id }}/{{ day_of_the_week_key }}/{{ time.hour }}/"
+                                       class="btn btn-outline-success mr-2">{{ time.hour }}:00 свободно</a>
                                 {% endif %}
                             {% endfor %}
-                            {% if (teacher.free[day_of_the_week_key].values() | sum ) == 0 %}
+                            {% if (teacher.free_times|selectattr("weekday",'equalto',day_of_the_week_key)|list|length) == 0 %}
                                 <p>Нет свободных уроков</p>
                             {% endif %}
                         {% endfor %}
                     </section>
-
                 </div>
             </article>
         </div>

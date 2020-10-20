@@ -1,22 +1,24 @@
 from flask import Flask
 from flask import render_template
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql.expression import func
 
 from flask_wtf import FlaskForm
-from jinja2 import environment
 from wtforms import StringField, SubmitField, HiddenField
+
 
 import data_provider
 
-
 app = Flask(__name__)
 app.secret_key = '42'
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tutors.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
 
 class BookingForm(FlaskForm):
     clientName = StringField("Вас зовут")
@@ -84,27 +86,29 @@ class Goal(db.Model):
 
 @app.route('/')
 def render_main():
-    return render_template('index.html', goals=data_provider.get_goals(), teachers=data_provider.get_teachers(6))
+    teachers = Teacher.query.order_by(func.random()).limit(6).all()
+    return render_template('index.html', goals=Goal.query.all(), teachers=teachers)
 
 
 @app.route('/all/')
 def render_all():
-    return render_template('index.html', goals=data_provider.get_goals(), teachers=data_provider.get_teachers())
+    teachers = Teacher.query.all()
+    return render_template('index.html', goals=Goal.query.all(), teachers=teachers)
 
 
 @app.route('/goals/<goal>/')
 def render_goals(goal):
-    goals = data_provider.get_goals()
-    teachers = data_provider.get_teachers()
+    goals = Goal.query.all()
+    goal = Goal.query.filter(Goal.short == goal).first()
+    teachers = Teacher.query.filter(Teacher.goals.contains(goal)).all()
     return render_template('goal.html', goals=goals, goal=goal, teachers=teachers)
 
 
 @app.route('/profiles/<int:teacher_id>/')
 def render_profiles(teacher_id):
-    teacher = data_provider.get_teacher(teacher_id)
-    goals = [data_provider.get_goal(k) for k in teacher['goals']]
+    teacher = Teacher.query.filter(Teacher.id == teacher_id).first()
     week = data_provider.whole_week()
-    return render_template('profile.html', teacher=teacher, goals=goals, week=week)
+    return render_template('profile.html', teacher=teacher, goals=teacher.goals, week=week)
 
 
 @app.route('/request/')
@@ -119,7 +123,7 @@ def render_request_done():
 
 @app.route('/booking/<int:teacher_id>/<day_of_the_week>/<time>/', methods=['GET', 'POST'])
 def render_booking(teacher_id, day_of_the_week, time):
-    teacher = data_provider.get_teacher(teacher_id)
+    teacher = Teacher.query.filter(Teacher.id == teacher_id).first()
     week = data_provider.whole_week()
     form = BookingForm()
     return render_template('booking.html', teacher=teacher, day_of_the_week=day_of_the_week, time=time, week=week,

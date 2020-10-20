@@ -2,6 +2,7 @@ import json
 import random
 
 
+
 def get_teacher(id):
     with open("teachers.json", "r", encoding='utf8') as f:
         teachers = json.load(f)
