@@ -2,7 +2,7 @@
 {% block container %}
     <div class="row mt-5">
         <div class="col-10 col-md-6 offset-1 offset-md-3 mb-3">
-            <form action="/booking_done/" class="card mb-3" method="post">
+            <form action="/booking/{{ teacher.id }}/{{ day_of_the_week }}/{{ time }}/" class="card mb-3" method="post">
                 <div class="card-body text-center pt-5">
                     <img src="{{ teacher.picture }}" class="mb-3" width="95" alt="">
                     <h2 class="h5 card-title mt-2 mb-2">{{ teacher.name }}</h2>
@@ -16,10 +16,16 @@
                         {{ form.clientTime(value = time, class_="form-control") }}
                         {{ form.clientTeacher(value = teacher.id, class_="form-control") }}
                     </div>
-
                     {{ form.clientName.label(class_="mb-1 mt-2",for="clientName") }}
+
+                    {% for err in form.clientName.errors %}
+                        <br><small class="text-danger">{{ err }}</small>
+                    {% endfor %}
                     {{ form.clientName(class_="form-control", id="clientName") }}
-                    {{ form.clientPhone.label(class_="mb-1 mt-2",for="clientName") }}
+                    {{ form.clientPhone.label(class_="mb-1 mt-2",for="clientPhone") }}
+                    {% for err in form.clientPhone.errors %}
+                        <br><small class="text-danger">{{ err }}</small>
+                    {% endfor %}
                     {{ form.clientPhone(class_="form-control", id="clientPhone") }}
                     {{ form.submit(class_="btn btn-primary btn-block mt-4") }}
                     {{ form.csrf_token }}
