@@ -1,7 +1,8 @@
-from app import db, Teacher, Booking, FreeTimes, Goal
-import json
-import data_provider
 import datetime
+import json
+
+import data_provider
+from app import db, Teacher, FreeTimes, Goal
 
 # with open("teachers.json", "w") as f:
 #     json.dump(teachers, f,
@@ -19,7 +20,6 @@ def load_goals_from_json_to_db():
         goal = Goal(rus=v, short=k)
         db.session.add(goal)
     db.session.commit()
-
 
 
 def load_teachers_from_json_to_db():
@@ -48,7 +48,6 @@ def load_teachers_from_json_to_db():
                                                  weekday=weekday_key,
                                                  time=t))
         db.session.commit()
-
 
 # load_teachers_from_json_to_db()
 

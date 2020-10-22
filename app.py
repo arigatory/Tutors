@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask import render_template
 from flask import request
@@ -14,7 +15,9 @@ import data_provider
 app = Flask(__name__)
 app.secret_key = '42'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tutors.db'
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+
+print(app.config["SQLALCHEMY_DATABASE_URI"])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -184,7 +187,6 @@ def render_booking_done():
         return "OK"
     else:
         return "errors"
-    #
 
 
 if __name__ == '__main__':
