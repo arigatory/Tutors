@@ -16,8 +16,6 @@ app = Flask(__name__)
 app.secret_key = '42'
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
-
-print(app.config["SQLALCHEMY_DATABASE_URI"])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -97,10 +95,10 @@ class RequestForm(FlaskForm):
     clientPhone = StringField("Ваш телефон", [InputRequired(message="Данное поле являетвся обязательным"),
                                               Length(min=5, message='Слишком короткий номер телефона')])
     submit = SubmitField("Найти мне преподавателя")
-    # goals = Goal.query.all()
+    goals = Goal.query.all()
     choices = []
-    # for goal in goals:
-    #     choices.append((goal.short, goal.rus))
+    for goal in goals:
+        choices.append((goal.short, goal.rus))
     goal = RadioField("Какая цель занятий?", choices=choices, default='travel')
     free_time = RadioField("Сколько времени есть?", choices=[('1-2', '1-2 часа в неделю'),
                                                              ('3-5', '3-5 часов в неделю'),
